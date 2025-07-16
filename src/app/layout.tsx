@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { ConfigProvider } from "antd";
+import theme from "../theme/themeConfig";
+import "antd/dist/reset.css"; // For AntD v5, resets all AntD component styles
 import "./globals.css";
 
 const geistSans = Geist({
@@ -27,7 +30,11 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        
+        <ConfigProvider theme={theme}>
+          {children}
+        </ConfigProvider>
+
       </body>
     </html>
   );
