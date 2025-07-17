@@ -1,6 +1,8 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
 import { Loader } from "@googlemaps/js-api-loader";
+import { WeatherData, WeatherLayer } from "@/types/Weather";
+import { fetchWeatherData } from "@/actions/weather";
 import {
   Button,
   Card,
@@ -9,6 +11,7 @@ import {
   Slider,
   Switch,
   Badge,
+  InputRef,
 } from "@/components"; // Your AntD wrappers
 import {
   Cloud,
@@ -31,32 +34,18 @@ import {
 const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? "";
 const weatherApiKey = process.env.NEXT_PUBLIC_OPENWEATHER_API_KEY ?? "";
 
-interface WeatherLayer {
-  id: string;
-  name: string;
-  icon: React.ElementType;
-  color: string;
-  opacity: number;
-  enabled: boolean;
-}
-
-interface WeatherData {
-  temperature: number;
-  humidity: number;
-  windSpeed: number;
-  windDirection: number;
-  pressure: number;
-  visibility: number;
-  condition: string;
-  precipitation: number;
-}
-
 const WeatherMap = () => {
+  const [searchText, setSearchText] = useState("");
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const [searchMarker, setSearchMarker] = useState<google.maps.Marker | null>(
+    null
+  );
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<google.maps.Map | null>(null);
   const [isMapLoaded, setIsMapLoaded] = useState(false);
-  const [mapType, setMapType] = useState<string>("satellite");
-  const [currentLocation, setCurrentLocation] = useState<google.maps.LatLng | null>(null);
+  const [mapType, setMapType] = useState<string>("roadmap");
+  const [currentLocation, setCurrentLocation] =
+    useState<google.maps.LatLng | null>(null);
   const [weatherData, setWeatherData] = useState<WeatherData>({
     temperature: 22,
     humidity: 65,
@@ -69,13 +58,62 @@ const WeatherMap = () => {
   });
 
   const [weatherLayers, setWeatherLayers] = useState<WeatherLayer[]>([
-    { id: "temperature", name: "Temperature", icon: Thermometer, color: "#ff6b6b", opacity: 0.6, enabled: false },
-    { id: "precipitation", name: "Precipitation", icon: CloudRain, color: "#4ecdc4", opacity: 0.7, enabled: true },
-    { id: "wind", name: "Wind Speed", icon: Wind, color: "#45b7d1", opacity: 0.5, enabled: false },
-    { id: "pressure", name: "Pressure", icon: Gauge, color: "#f9ca24", opacity: 0.6, enabled: false },
-    { id: "clouds", name: "Cloud Cover", icon: Cloud, color: "#ddd", opacity: 0.4, enabled: false },
-    { id: "lightning", name: "Lightning", icon: Zap, color: "#feca57", opacity: 0.8, enabled: false },
-    { id: "snow", name: "Snow Cover", icon: Snowflake, color: "#ffffff", opacity: 0.7, enabled: false },
+    {
+      id: "temperature",
+      name: "Temperature",
+      icon: Thermometer,
+      color: "#ff6b6b",
+      opacity: 0.6,
+      enabled: false,
+    },
+    {
+      id: "precipitation",
+      name: "Precipitation",
+      icon: CloudRain,
+      color: "#4ecdc4",
+      opacity: 0.7,
+      enabled: true,
+    },
+    {
+      id: "wind",
+      name: "Wind Speed",
+      icon: Wind,
+      color: "#45b7d1",
+      opacity: 0.5,
+      enabled: false,
+    },
+    {
+      id: "pressure",
+      name: "Pressure",
+      icon: Gauge,
+      color: "#f9ca24",
+      opacity: 0.6,
+      enabled: false,
+    },
+    {
+      id: "clouds",
+      name: "Cloud Cover",
+      icon: Cloud,
+      color: "#ddd",
+      opacity: 0.4,
+      enabled: false,
+    },
+    {
+      id: "lightning",
+      name: "Lightning",
+      icon: Zap,
+      color: "#feca57",
+      opacity: 0.8,
+      enabled: false,
+    },
+    {
+      id: "snow",
+      name: "Snow Cover",
+      icon: Snowflake,
+      color: "#ffffff",
+      opacity: 0.7,
+      enabled: false,
+    },
   ]);
 
   const mapTypes = [
@@ -100,6 +138,31 @@ const WeatherMap = () => {
     } catch (error) {
       console.log("Error loading Google Maps:", error);
     }
+  };
+
+  const handleLocationSearch = async () => {
+    if (!searchText || !window.google || !map.current) return;
+
+    const geocoder = new window.google.maps.Geocoder();
+    geocoder.geocode({ address: searchText },async (results, status) => {
+      if (status === "OK" && results && results[0]) {
+        const { location } = results[0].geometry;
+        map.current?.panTo(location);
+        map.current?.setZoom(12);
+
+         const data = await fetchWeatherData(location.lat(), location.lng(), weatherApiKey);
+         if (data) setWeatherData(data);
+
+        // Optionally, place a marker:
+        new window.google.maps.Marker({
+          map: map.current,
+          position: location,
+          title: results[0].formatted_address,
+        });
+      } else {
+        alert("Location not found. Try something else!");
+      }
+    });
   };
 
   useEffect(() => {
@@ -130,25 +193,9 @@ const WeatherMap = () => {
 
     addWeatherOverlays();
 
-    // Weather data update simulation
-    const updateWeather = () => {
-      setWeatherData((prev) => ({
-        ...prev,
-        temperature: 15 + Math.random() * 20,
-        humidity: 40 + Math.random() * 40,
-        windSpeed: Math.random() * 25,
-        windDirection: Math.random() * 360,
-        pressure: 990 + Math.random() * 40,
-        precipitation: Math.random() * 10,
-      }));
-    };
-
-    const weatherInterval = setInterval(updateWeather, 5000);
-
-    // Get user location
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
-        (position) => {
+        async(position) => {
           const pos = {
             lat: position.coords.latitude,
             lng: position.coords.longitude,
@@ -156,6 +203,12 @@ const WeatherMap = () => {
           setCurrentLocation(new google.maps.LatLng(pos.lat, pos.lng));
           map.current?.setCenter(pos);
           map.current?.setZoom(10);
+
+          // Fetch real weather data here!
+        const data =await fetchWeatherData(pos.lat, pos.lng, weatherApiKey);
+        if (data){
+          setWeatherData(data);
+        } 
 
           // Add marker for current location
           new google.maps.Marker({
@@ -178,9 +231,6 @@ const WeatherMap = () => {
       );
     }
 
-    return () => {
-      clearInterval(weatherInterval);
-    };
     // eslint-disable-next-line
   }, [isMapLoaded, mapType]);
 
@@ -300,6 +350,23 @@ const WeatherMap = () => {
             ))}
           </Select>
         </div>
+        <div className="mb-4">
+          <label className="text-sm font-medium">Search Location</label>
+          <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
+            <Input
+              ref={searchInputRef as React.Ref<InputRef>}
+              type="text"
+              value={searchText}
+              placeholder="Enter city or address"
+              onChange={(e) => setSearchText(e.target.value)}
+              onPressEnter={handleLocationSearch}
+              style={{ flex: 1 }}
+            />
+            <Button type="primary" onClick={handleLocationSearch}>
+              Search
+            </Button>
+          </div>
+        </div>
 
         {/* Weather Layers */}
         <div>
@@ -325,7 +392,9 @@ const WeatherMap = () => {
                     justifyContent: "space-between",
                   }}
                 >
-                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <div
+                    style={{ display: "flex", alignItems: "center", gap: 8 }}
+                  >
                     <IconComponent
                       className="h-4 w-4"
                       style={{ color: layer.color }}
