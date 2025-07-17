@@ -98,7 +98,7 @@ const WeatherMap = () => {
       await loader.load();
       setIsMapLoaded(true);
     } catch (error) {
-      console.error("Error loading Google Maps:", error);
+      console.log("Error loading Google Maps:", error);
     }
   };
 
@@ -495,23 +495,6 @@ const WeatherMap = () => {
           </div>
         </div>
       </Card>
-
-      {/* Instructions overlay */}
-      <div
-        className="absolute bottom-4 right-4 p-4 bg-yellow-100 border border-yellow-300 rounded-lg shadow-lg max-w-xs"
-        style={{ zIndex: 20 }}
-      >
-        <div className="flex items-start gap-2">
-          <Settings className="h-4 w-4 text-yellow-600 mt-0.5" />
-          <div className="text-xs text-yellow-800">
-            <p className="font-medium mb-1">Setup Complete:</p>
-            <p>
-              Weather overlays require OpenWeatherMap API key. Get it from
-              openweathermap.org for full weather data.
-            </p>
-          </div>
-        </div>
-      </div>
     </div>
   );
 };
