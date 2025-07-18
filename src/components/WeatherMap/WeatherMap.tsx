@@ -51,14 +51,22 @@ const WEATHER_TILE_MAPS: Record<string, string> = {
 // Layer desc
 const getLayerDescription = (id: string, name: string) => {
   switch (id) {
-    case "precipitation": return "Rain/Snow Intensity";
-    case "temperature": return "Temperature (blue=cold, red=hot)";
-    case "wind": return "Wind Speed";
-    case "pressure": return "Atmospheric Pressure";
-    case "clouds": return "Cloud Coverage";
-    case "lightning": return "Lightning Strikes";
-    case "snow": return "Snow Cover";
-    default: return name;
+    case "precipitation":
+      return "Rain/Snow Intensity";
+    case "temperature":
+      return "Temperature (blue=cold, red=hot)";
+    case "wind":
+      return "Wind Speed";
+    case "pressure":
+      return "Atmospheric Pressure";
+    case "clouds":
+      return "Cloud Coverage";
+    case "lightning":
+      return "Lightning Strikes";
+    case "snow":
+      return "Snow Cover";
+    default:
+      return name;
   }
 };
 
@@ -68,10 +76,13 @@ const WeatherMap = () => {
   const searchInputRef = useRef<HTMLInputElement>(null);
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<google.maps.Map | null>(null);
-  const overlayRefs = useRef<Record<string, google.maps.ImageMapType | null>>({});
+  const overlayRefs = useRef<Record<string, google.maps.ImageMapType | null>>(
+    {}
+  );
   const [isMapLoaded, setIsMapLoaded] = useState(false);
   const [mapType, setMapType] = useState<string>("roadmap");
-  const [currentLocation, setCurrentLocation] = useState<google.maps.LatLng | null>(null);
+  const [currentLocation, setCurrentLocation] =
+    useState<google.maps.LatLng | null>(null);
   const [weatherData, setWeatherData] = useState<WeatherData>({
     temperature: 0,
     humidity: 0,
@@ -84,13 +95,62 @@ const WeatherMap = () => {
   });
 
   const [weatherLayers, setWeatherLayers] = useState<WeatherLayer[]>([
-    { id: "temperature", name: "Temperature", icon: Thermometer, color: "#ff6b6b", opacity: 0.6, enabled: false },
-    { id: "precipitation", name: "Precipitation", icon: CloudRain, color: "#4ecdc4", opacity: 0.7, enabled: true },
-    { id: "wind", name: "Wind Speed", icon: Wind, color: "#45b7d1", opacity: 0.5, enabled: false },
-    { id: "pressure", name: "Pressure", icon: Gauge, color: "#f9ca24", opacity: 0.6, enabled: false },
-    { id: "clouds", name: "Cloud Cover", icon: Cloud, color: "#ddd", opacity: 0.4, enabled: false },
-    { id: "lightning", name: "Lightning", icon: Zap, color: "#feca57", opacity: 0.8, enabled: false },
-    { id: "snow", name: "Snow Cover", icon: Snowflake, color: "#ffffff", opacity: 0.7, enabled: false },
+    {
+      id: "temperature",
+      name: "Temperature",
+      icon: Thermometer,
+      color: "#ff6b6b",
+      opacity: 0.6,
+      enabled: false,
+    },
+    {
+      id: "precipitation",
+      name: "Precipitation",
+      icon: CloudRain,
+      color: "#4ecdc4",
+      opacity: 0.7,
+      enabled: true,
+    },
+    {
+      id: "wind",
+      name: "Wind Speed",
+      icon: Wind,
+      color: "#45b7d1",
+      opacity: 0.5,
+      enabled: false,
+    },
+    {
+      id: "pressure",
+      name: "Pressure",
+      icon: Gauge,
+      color: "#f9ca24",
+      opacity: 0.6,
+      enabled: false,
+    },
+    {
+      id: "clouds",
+      name: "Cloud Cover",
+      icon: Cloud,
+      color: "#ddd",
+      opacity: 0.4,
+      enabled: false,
+    },
+    {
+      id: "lightning",
+      name: "Lightning",
+      icon: Zap,
+      color: "#feca57",
+      opacity: 0.8,
+      enabled: false,
+    },
+    {
+      id: "snow",
+      name: "Snow Cover",
+      icon: Snowflake,
+      color: "#ffffff",
+      opacity: 0.7,
+      enabled: false,
+    },
   ]);
 
   const mapTypes = [
@@ -98,6 +158,7 @@ const WeatherMap = () => {
     { value: "satellite", label: "Satellite" },
     { value: "hybrid", label: "Hybrid" },
     { value: "terrain", label: "Terrain" },
+    { value: "styled_map", label: "Custom Styled Map" }, // For custom map styles if you define them
   ];
 
   // 1. Load Google Maps script ONCE
@@ -109,13 +170,18 @@ const WeatherMap = () => {
       version: "weekly",
       libraries: ["places", "geometry"],
     });
-    loader.load().then(() => { if (mounted) setIsMapLoaded(true); });
-    return () => { mounted = false; };
+    loader.load().then(() => {
+      if (mounted) setIsMapLoaded(true);
+    });
+    return () => {
+      mounted = false;
+    };
   }, [apiKey]);
 
   // 2. Create map instance ONCE after loaded
   useEffect(() => {
-    if (!isMapLoaded || !mapContainer.current || !window.google || map.current) return;
+    if (!isMapLoaded || !mapContainer.current || !window.google || map.current)
+      return;
     map.current = new google.maps.Map(mapContainer.current, {
       center: { lat: 20, lng: 0 },
       zoom: 3,
@@ -167,7 +233,9 @@ const WeatherMap = () => {
           const geocoder = new window.google.maps.Geocoder();
           geocoder.geocode({ location: pos }, (results, status) => {
             if (status === "OK" && results && results.length) {
-              const cityResult = results.find((r) => r.types.includes("locality"));
+              const cityResult = results.find((r) =>
+                r.types.includes("locality")
+              );
               const name = cityResult
                 ? cityResult.formatted_address
                 : results[0].formatted_address;
@@ -279,9 +347,13 @@ const WeatherMap = () => {
   }
 
   // --- Fuzzy/Forgiving Search Handler ---
-  const handleLocationSearch = async (input?: string, updateSearchText = true) => {
+  const handleLocationSearch = async (
+    input?: string,
+    updateSearchText = true
+  ) => {
     setSearchError(null);
-    const query = input?.trim() || searchText.trim() || localStorage.getItem("city")?.trim();
+    const query =
+      input?.trim() || searchText.trim() || localStorage.getItem("city")?.trim();
     if (!query || !window.google || !map.current) {
       setSearchError("Please enter a city or address.");
       return;
@@ -294,7 +366,11 @@ const WeatherMap = () => {
         const { location } = results[0].geometry;
         map.current?.panTo(location);
         map.current?.setZoom(12);
-        const data = await fetchWeatherData(location.lat(), location.lng(), weatherApiKey);
+        const data = await fetchWeatherData(
+          location.lat(),
+          location.lng(),
+          weatherApiKey
+        );
         if (data) setWeatherData(data);
         new window.google.maps.Marker({
           map: map.current,
@@ -315,7 +391,11 @@ const WeatherMap = () => {
               const { location } = res2[0].geometry;
               map.current?.panTo(location);
               map.current?.setZoom(12);
-              const data = await fetchWeatherData(location.lat(), location.lng(), weatherApiKey);
+              const data = await fetchWeatherData(
+                location.lat(),
+                location.lng(),
+                weatherApiKey
+              );
               if (data) setWeatherData(data);
               new window.google.maps.Marker({
                 map: map.current,
@@ -347,11 +427,16 @@ const WeatherMap = () => {
   // Weather icon selector
   const getWeatherIcon = (condition: string) => {
     switch (condition) {
-      case "Sunny": return Sun;
-      case "Cloudy": return Cloud;
-      case "Rainy": return CloudRain;
-      case "Snowy": return Snowflake;
-      default: return Sun;
+      case "Sunny":
+        return Sun;
+      case "Cloudy":
+        return Cloud;
+      case "Rainy":
+        return CloudRain;
+      case "Snowy":
+        return Snowflake;
+      default:
+        return Sun;
     }
   };
   const WeatherIcon = getWeatherIcon(weatherData.condition);
@@ -363,7 +448,7 @@ const WeatherMap = () => {
           <b>Missing Google Maps or OpenWeather API Key.</b>
           <br />
           <span>
-            Please set <code>NEXT_PUBLIC_GOOGLE_MAPS_API_KEY</code> and{" "}
+            Please set <code>NEXT_PUBLIC_Maps_API_KEY</code> and{" "}
             <code>NEXT_PUBLIC_OPENWEATHER_API_KEY</code> in your{" "}
             <code>.env.local</code> file.
           </span>
@@ -459,7 +544,10 @@ const WeatherMap = () => {
         >
           {/* Location Search */}
           <div className="mb-4">
-            <label className="text-sm font-medium" style={{ color: "#EFF5FF" }}>
+            <label
+              className="text-sm font-medium"
+              style={{ color: "#EFF5FF" }}
+            >
               Search Location
             </label>
             <div style={{ marginTop: 8 }}>
@@ -496,7 +584,6 @@ const WeatherMap = () => {
               >
                 Search
               </Button>
-              
             </div>
           </div>
 
@@ -521,7 +608,10 @@ const WeatherMap = () => {
 
           {/* Map Type Selector */}
           <div className="mb-4">
-            <label className="text-sm font-medium" style={{ color: "#EFF5FF" }}>
+            <label
+              className="text-sm font-medium"
+              style={{ color: "#EFF5FF" }}
+            >
               Map Type
             </label>
             <Select
