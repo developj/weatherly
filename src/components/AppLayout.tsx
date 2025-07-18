@@ -24,7 +24,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({
 }) =>{ 
     const isMobile = useIsMobile();
     return (
-  <div className="relative">
+  <div className="relative" style={{ background: colorBgContainer }}>
     <Layout
       style={{
         minHeight: "100vh",
@@ -64,7 +64,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({
         <Content style={{ margin: "0px ", background: colorBgContainer }}>
           <div
             style={{
-              padding: 24,
+              padding: isMobile? 0: 24,
               paddingTop: 0,
               minHeight: 360,
               background: colorBgContainer,
