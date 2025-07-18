@@ -1,3 +1,3 @@
-import { Input as AntdInput, InputRef } from 'antd';
+import { Input as AntdInput } from 'antd';
 export const Input = AntdInput;
-export type { InputRef } from 'antd';
+export type { InputRef} from 'antd';

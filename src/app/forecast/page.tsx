@@ -2,14 +2,15 @@
 import React, { useState, useEffect } from "react";
 import AppLayout from "@/components/AppLayout";
 import WeatherForecastDashboard from "@/components/WeatherForecast/WeatherForecastDashboard";
-import { Card, Input, Button, Switch, Select, message } from "antd";
+import { Card, Input, Button, Select, message } from "antd";
 import Link from "next/link";
-import { Layers, Search } from "lucide-react";
+import { Search } from "lucide-react";
 
 interface OpenWeatherMapForecast {
   cod: string;
   message: number;
   cnt: number;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   list: any[];
   city: {
     id: number;
@@ -72,7 +73,6 @@ const NoWeatherResult = ({ city }: { city: string }) => (
 const WeatherPage = () => {
   const DEFAULT_CITY = "Helsinki";
   const [input, setInput] = useState(DEFAULT_CITY);
-  const [location, setLocation] = useState(DEFAULT_CITY);
   const [frequency, setFrequency] = useState<
     "hourly" | "daily" | "weekly" | "monthly" | "yearly"
   >("hourly");
@@ -90,7 +90,7 @@ const WeatherPage = () => {
       if (!res.ok) throw new Error("City not found");
       const data = await res.json();
       setForecast(data);
-      setLocation(city);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       message.error(err.message || "Error fetching forecast");
       setForecast(null);
@@ -102,9 +102,7 @@ const WeatherPage = () => {
   useEffect(() => {
     const savedCity = localStorage.getItem("city") || DEFAULT_CITY;
     setInput(savedCity);
-    setLocation(savedCity);
     fetchForecast(savedCity);
-    // eslint-disable-next-line
   }, []);
 
   // Sidebar UI

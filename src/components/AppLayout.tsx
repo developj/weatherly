@@ -20,7 +20,6 @@ const AppLayout: React.FC<AppLayoutProps> = ({
   zIndexSider = 3000,
   colorBgContainer = "#1C2951",
   header = null,
-  borderRadiusLG = 8,
 }) => (
   <div>
     <Layout
@@ -43,9 +42,11 @@ const AppLayout: React.FC<AppLayoutProps> = ({
         width={320}
         onBreakpoint={(broken) => {
           // optional: handle responsive collapse
+          console.log("Sider breakpoint:", broken);
         }}
         onCollapse={(collapsed, type) => {
           // optional: handle collapse
+          console.log("Sider collapsed:", collapsed, "type:", type);
         }}
       >
         {sider}

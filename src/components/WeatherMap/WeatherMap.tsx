@@ -2,7 +2,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Loader } from "@googlemaps/js-api-loader";
 import { WeatherData, WeatherLayer } from "@/types/Weather";
-import WeatherLegend from "./WeatherLegend";
 import { fetchWeatherData } from "@/actions/weather";
 import Link from "next/link";
 import AppLayout from "../AppLayout";
@@ -27,7 +26,6 @@ import {
   Droplets,
   Gauge,
   Zap,
-  Layers,
   MapPin,
   RefreshCw,
   Search,
@@ -81,8 +79,6 @@ const WeatherMap = () => {
   );
   const [isMapLoaded, setIsMapLoaded] = useState(false);
   const [mapType, setMapType] = useState<string>("roadmap");
-  const [currentLocation, setCurrentLocation] =
-    useState<google.maps.LatLng | null>(null);
   const [weatherData, setWeatherData] = useState<WeatherData>({
     temperature: 0,
     humidity: 0,
@@ -176,7 +172,7 @@ const WeatherMap = () => {
     return () => {
       mounted = false;
     };
-  }, [apiKey]);
+  }, []);
 
   // 2. Create map instance ONCE after loaded
   useEffect(() => {
@@ -192,12 +188,7 @@ const WeatherMap = () => {
       fullscreenControl: true,
       zoomControl: true,
     });
-    // Clean overlays on destroy
-    return () => {
-      if (map.current && window.google) {
-        Object.keys(overlayRefs.current).forEach((id) => removeOverlay(id));
-      }
-    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isMapLoaded]);
 
   // 3. Handle map type change (NO side effect)
@@ -223,7 +214,6 @@ const WeatherMap = () => {
             lat: position.coords.latitude,
             lng: position.coords.longitude,
           };
-          setCurrentLocation(new google.maps.LatLng(pos.lat, pos.lng));
           map.current?.setCenter(pos);
           map.current?.setZoom(10);
           const data = await fetchWeatherData(pos.lat, pos.lng, weatherApiKey);
@@ -273,7 +263,7 @@ const WeatherMap = () => {
       setSearchText(city);
       handleLocationSearch(city, false);
     }
-    // eslint-disable-next-line
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isMapLoaded]);
 
   // 5. Manage overlays on weatherLayers change
@@ -292,6 +282,7 @@ const WeatherMap = () => {
         removeOverlay(id);
       }
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [weatherLayers, isMapLoaded, mapType]);
 
   // --- Handlers and utility functions ---
@@ -384,7 +375,7 @@ const WeatherMap = () => {
         setSearchError(null);
       } else {
         // Fallback: try basic normalization (lowercase, single spaces)
-        let fallback = query.replace(/\s+/g, " ").toLowerCase();
+        const fallback = query.replace(/\s+/g, " ").toLowerCase();
         if (fallback !== query.toLowerCase()) {
           geocoder.geocode({ address: fallback }, async (res2, stat2) => {
             if (stat2 === "OK" && res2 && res2[0]) {

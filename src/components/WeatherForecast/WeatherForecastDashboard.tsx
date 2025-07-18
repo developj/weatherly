@@ -11,7 +11,8 @@ import isoWeek from "dayjs/plugin/isoWeek";
 dayjs.extend(isoWeek);
 
 // ---- Types ----
-type ForecastEntry = any; // Replace with your ForecastEntry type!
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type ForecastEntry = any; 
 export interface OpenWeatherMapForecast {
   cod: string;
   message: number;
