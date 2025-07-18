@@ -64,7 +64,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({
         <Content style={{ margin: "0px ", background: colorBgContainer }}>
           <div
             style={{
-              padding: isMobile? 0: 24,
+              padding: isMobile? 4: 24,
               paddingTop: 0,
               minHeight: 360,
               background: colorBgContainer,
