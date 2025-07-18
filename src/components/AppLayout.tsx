@@ -37,6 +37,8 @@ const AppLayout: React.FC<AppLayoutProps> = ({
           background: colorBgContainer,
           zIndex: zIndexSider,
           minHeight: "100vh",
+          border: `1px solid rgba(255, 255, 255, 0.1)`,
+          boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
         }}
         width={320}
         onBreakpoint={(broken) => {
@@ -48,8 +50,8 @@ const AppLayout: React.FC<AppLayoutProps> = ({
       >
         {sider}
       </Sider>
-      <Layout>
-        <Header style={{ paddingLeft: 15, paddingRight: 15, background: colorBgContainer }}>
+      <Layout style={{ background: colorBgContainer }}>
+        <Header style={{ marginTop: 15, marginBottom:10, paddingLeft: 15, paddingRight: 15, background: colorBgContainer }}>
           {" "}
           {header ? header : ""}
         </Header>
