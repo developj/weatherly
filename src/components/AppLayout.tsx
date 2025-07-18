@@ -2,6 +2,7 @@
 import React from "react";
 import { Layout } from "antd";
 const { Sider, Header, Content, Footer } = Layout;
+import { useIsMobile } from "@/hooks/use-mobile";
 
 type AppLayoutProps = {
   sider: React.ReactNode;
@@ -20,13 +21,15 @@ const AppLayout: React.FC<AppLayoutProps> = ({
   zIndexSider = 3000,
   colorBgContainer = "#1C2951",
   header = null,
-}) => (
-  <div>
+}) =>{ 
+    const isMobile = useIsMobile();
+    return (
+  <div className="relative">
     <Layout
       style={{
         minHeight: "100vh",
-        position: "relative",
         background: colorBgContainer,
+        position: "relative",
       }}
     >
       <Sider
@@ -38,8 +41,10 @@ const AppLayout: React.FC<AppLayoutProps> = ({
           minHeight: "100vh",
           border: `1px solid rgba(255, 255, 255, 0.1)`,
           boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
+          position: isMobile ? "absolute" : "relative",
+        top: 0,
         }}
-        width={320}
+        width={330}
         onBreakpoint={(broken) => {
           // optional: handle responsive collapse
           console.log("Sider breakpoint:", broken);
@@ -82,6 +87,6 @@ const AppLayout: React.FC<AppLayoutProps> = ({
       </Layout>
     </Layout>
   </div>
-);
+)};
 
 export default AppLayout;
