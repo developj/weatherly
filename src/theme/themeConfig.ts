@@ -4,7 +4,7 @@ import type { ThemeConfig } from 'antd';
 const theme: ThemeConfig = {
   token: {
     // Brand colors
-    colorPrimary: '#4f46e5', // Indigo
+    colorPrimary: '#274996', // Indigo
     colorSuccess: '#10b981', // Green
     colorWarning: '#f59e42', // Orange
     colorError: '#ef4444',   // Red
@@ -22,7 +22,7 @@ const theme: ThemeConfig = {
   },
   components: {
     Button: {
-      colorPrimary: '#6366f1',
+      colorPrimary: '#0E4C92',
       borderRadius: 14,
       fontWeight: 600,
       controlHeight: 44,

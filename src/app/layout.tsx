@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ConfigProvider } from "antd";
 import theme from "../theme/themeConfig";
-import "antd/dist/reset.css"; // For AntD v5, resets all AntD component styles
+// import "antd/dist/reset.css"; // For AntD v5, resets all AntD component styles
 import "./globals.css";
 
 const geistSans = Geist({
