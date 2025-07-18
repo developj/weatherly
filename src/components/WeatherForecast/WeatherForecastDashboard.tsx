@@ -150,7 +150,7 @@ const WeatherForecastDashboard: React.FC<WeatherForecastDashboardProps> = ({ for
       <Row gutter={[16, 16]}>
         <Col xs={12} sm={6}><Card title="Min Temp">{minTemp}°C</Card></Col>
         <Col xs={12} sm={6}><Card title="Max Temp">{maxTemp}°C</Card></Col>
-        <Col xs={12} sm={6}><Card title="Max Precip (%)">{maxPop}%</Card></Col>
+        <Col xs={12} sm={6}><Card title="Max Precip">{maxPop}%</Card></Col>
         <Col xs={12} sm={6}><Card title="Max Humidity">{maxHumidity}%</Card></Col>
       </Row>
       <Row gutter={[16, 16]} style={{ marginTop: 32 }}>
