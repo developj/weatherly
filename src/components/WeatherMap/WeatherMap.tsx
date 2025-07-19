@@ -756,7 +756,8 @@ const WeatherMap = () => {
         </Card>
       }
     >
-      <div className="h-screen w-full relative bg-gradient-to-br from-blue-900 via-blue-700 to-purple-800">
+      <div className="pb-24 h-screen w-full relative">
+      <div className="h-full w-full relative bg-gradient-to-br from-blue-900 via-blue-700 to-purple-800">
         {/* Map Container */}
         <div ref={mapContainer} className="absolute inset-0" />
         {/* Current Weather Widget */}
@@ -856,6 +857,8 @@ const WeatherMap = () => {
           )}
         </Card>
       </div>
+      </div>
+       
     </AppLayout>
   );
 };
