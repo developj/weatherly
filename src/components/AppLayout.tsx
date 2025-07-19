@@ -107,7 +107,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({
               <button
                 style={{
                   position: "absolute",
-                  bottom: 340,
+                  bottom: 310,
                   right: 20,
                   zIndex: 1000,
                   border: "none",
