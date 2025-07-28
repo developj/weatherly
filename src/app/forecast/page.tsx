@@ -131,6 +131,9 @@ const WeatherPage = () => {
         boxShadow: "0 0 32px 0 #0009",
       }}
     >
+      <div className="text-sm  text-gray-300 group-hover:text-white transition-colors">
+        By Ezeobi Jeshurun
+      </div>
       <label className="text-sm font-medium" style={{ color: "#EFF5FF" }}>
         Search Location
       </label>

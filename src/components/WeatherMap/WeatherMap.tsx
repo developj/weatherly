@@ -530,10 +530,14 @@ const WeatherMap = () => {
                 <circle cx="19" cy="25" r="3" fill="#FDE68A" />
               </svg>
               <span className="text-lg font-bold text-white ">Weatherly</span>
+            
             </Link>
           }
         >
           {/* Location Search */}
+            <span className="text-sm text-gray-300 group-hover:text-white transition-colors">
+               By Ezeobi Jeshurun 
+              </span>
           <div className="mb-4">
             <label
               className="text-sm font-medium"
